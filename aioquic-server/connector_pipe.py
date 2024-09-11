@@ -1,12 +1,15 @@
+
 import os
 import asyncio
+
 from typing import List, Dict
+from app_logs import getLogger
+Log = getLogger(__name__)
 
 class Client:
-    def __init__(self, uid, web_transport, websocket, data):
+    def __init__(self, uid, web_transport, data):
         self.uid = uid
         self.username = f'user-{uid}'
-        self.reliableWS = websocket
         self.unreliableFastWT = web_transport
         self.wt_latency = -1
         self.data = data
@@ -19,7 +22,7 @@ class Client:
         self.username = username
 
     def __str__(self):
-        return f'Client(uid = {self.uid}, WS = {id(self.reliableWS)}, WT = {id(self.unreliableFastWT)})'
+        return f'Client(uid = {self.uid}, WT = {id(self.unreliableFastWT)})'
 
 
 
@@ -40,13 +43,27 @@ async def listen_to_pipe():
         while True:
             data = await asyncio.to_thread(fifo.read)
             if data:
-                print(f"Received: {data}")
+                from_connector(data)
+
+def write_to_pipe(msg: str):
+    with open(fifo_path_write, 'w') as fifo:
+        fifo.write(f'{msg}\n')
 
 def set_game_client_communication_web_transport(c_uid: int, web_transport) -> Client:
     for client in clients:
         if client.uid == c_uid:
             client.unreliableFastWT = web_transport
             return client
-        
-def to_game_server():
+
+def from_connector(msg: str):
+    print(f"from_connector: {msg}")
+    if client is None:
+        client = Client(int(msg.split('.')[1]), None, None)
+        clients.append(client)
+
+def to_connector(msg, client: Client):
+    print(f"to_connector: {msg}")
+    if client is not None:
+        write_to_pipe(f'{client.uid}.{msg}')
+    # Log.info(msg)
     pass

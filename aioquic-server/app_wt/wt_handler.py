@@ -12,7 +12,7 @@ from aioquic.quic.configuration import QuicConfiguration
 from aioquic.quic.connection import stream_is_unidirectional
 from aioquic.quic.events import ProtocolNegotiated, StreamReset, QuicEvent
 
-from connector_pipe import to_game_server, set_game_client_communication_web_transport, Client
+from connector_pipe import to_connector, set_game_client_communication_web_transport, Client
 from datetime import datetime
 
 
@@ -57,7 +57,7 @@ class CounterHandler:
                     self.client.wt_latency = int((datetime.now() - self.now).total_seconds() * 1000 / 2)
                     # Log.info(f'{self.client.wt_latency}, {(datetime.now() - self.now).total_seconds()}')
                 else:
-                    to_game_server(msg, self.client)
+                    to_connector(msg, self.client)
                 
                 if (datetime.now() - self.now).total_seconds() > 5:
                     self.now = datetime.now()
