@@ -1,33 +1,33 @@
 package org.example;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Hello world!
  *
  */
 public class App {
-    private static final String READ_PIPE_PATH = "/tmp/from_python_named_pipe";
-    private static final String WRITE_PIPE_PATH = "/tmp/to_python_named_pipe";
 
     public static void main(String[] args) {
-        try {
-            listenToPipe();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void listenToPipe() throws IOException {
-        System.out.println("Listening to named pipe: " + READ_PIPE_PATH);
-        try (BufferedReader reader = new BufferedReader(new FileReader(READ_PIPE_PATH))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println("Received: " + line);
+        WebTransportClient client = new WebTransportClient();
+        client.addReaderCallback(message -> {
+            // Handle the message read from the named pipe
+            System.out.println("Callback received message: " + message);
+        });
+        client.connect();
+        for (int i = 0; i < 100; i++) {
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            client.send("Hello from Java!");
+        }
+
+        try {
+            TimeUnit.DAYS.sleep(100000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -41,7 +41,7 @@ async def listen_to_pipe():
     print(f"Listening to named pipe: {fifo_path_read}")
     with open(fifo_path_read, 'r') as fifo:
         while True:
-            data = await asyncio.to_thread(fifo.read)
+            data = await asyncio.to_thread(fifo.readline)
             if data:
                 from_connector(data)
 
@@ -57,9 +57,9 @@ def set_game_client_communication_web_transport(c_uid: int, web_transport) -> Cl
 
 def from_connector(msg: str):
     print(f"from_connector: {msg}")
-    if client is None:
-        client = Client(int(msg.split('.')[1]), None, None)
-        clients.append(client)
+    # if client is None:
+    #     client = Client(int(msg.split('.')[1]), None, None)
+    #     clients.append(client)
 
 def to_connector(msg, client: Client):
     print(f"to_connector: {msg}")

@@ -125,8 +125,6 @@ if __name__ == '__main__':
             create_protocol=WebTransportProtocol,
         ))
     event_loop.create_task(listen_to_pipe())
-    # asyncio.run(main())
-    # asyncio.ensure_future(listen_to_pipe(), loop=event_loop)
 
     try:
         Log.info("[WebTransport] Listening on https://{}:{}".format(BIND_ADDRESS, BIND_PORT))
