@@ -1,3 +1,5 @@
+import os
+import asyncio
 from typing import List, Dict
 
 class Client:
@@ -22,6 +24,23 @@ class Client:
 
 
 clients: List[Client] = []
+# Define the path for the named pipe
+fifo_path_read = '/tmp/to_python_named_pipe'
+fifo_path_write = '/tmp/from_python_named_pipe'
+
+# Create the named pipe if it doesn't exist
+if not os.path.exists(fifo_path_read):
+    os.mkfifo(fifo_path_read)
+if not os.path.exists(fifo_path_write):
+    os.mkfifo(fifo_path_write)
+
+async def listen_to_pipe():
+    print(f"Listening to named pipe: {fifo_path_read}")
+    with open(fifo_path_read, 'r') as fifo:
+        while True:
+            data = await asyncio.to_thread(fifo.read)
+            if data:
+                print(f"Received: {data}")
 
 def set_game_client_communication_web_transport(c_uid: int, web_transport) -> Client:
     for client in clients:

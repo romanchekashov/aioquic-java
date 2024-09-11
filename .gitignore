@@ -73,3 +73,5 @@ venv
 webtransport-py/certificate
 webtransport-py/logs
 webtransport-py/app_logs/logs
+
+connector-java/target
